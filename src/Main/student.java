@@ -21,7 +21,6 @@ public class student {
         String sql = "select * from student where xh = \'" + userTable.getId()+'\'';
         SqlSrvDBConn sqlSrvDBConn = new SqlSrvDBConn();
         String result[][] = sqlSrvDBConn.getInformation(sql);
-        sqlSrvDBConn.closeStatement();
         sqlSrvDBConn.closeConn();
         return result;
     }
@@ -31,7 +30,7 @@ public class student {
         String sql = "select * from elect where xh = \'" + userTable.getId()+"\'";
         SqlSrvDBConn sqlSrvDBConn = new SqlSrvDBConn();
         String result[][] = sqlSrvDBConn.getInformation(sql);
-        sqlSrvDBConn.closeStatement();
+
         sqlSrvDBConn.closeConn();
         return result;
     }
@@ -65,7 +64,6 @@ public class student {
             e.printStackTrace();
         }
 
-        sqlSrvDBConn.closeStatement();
         sqlSrvDBConn.closeConn();
         return result;
     }
@@ -91,7 +89,24 @@ public class student {
         }
 
         try{
-            pstmt = conn.prepareStatement("insert into elect values (?,?,?,?)");
+            ResultSet rs = sqlSrvDBConn.executeQuery("select * from elect");
+            boolean status = false;
+            while(rs.next()){
+                if(rs.getString("xq").trim().compareTo(xq)==0 &&
+                        rs.getString("kh").trim().compareTo(kh)==0 &&
+                        rs.getString("gh").trim().compareTo(gh)==0 &&
+                        rs.getString("xh").trim().compareTo(userTable.getId())==0){
+                    status = false;
+                    break;
+                }
+            }
+            if(status==false) return false;
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        try{
+            pstmt = conn.prepareStatement("insert into elect values (?,?,?,?,null,null,null)");
             pstmt.setString(1,userTable.getId());
             pstmt.setString(2,xq);
             pstmt.setString(3,kh);
@@ -100,7 +115,9 @@ public class student {
         }catch (SQLException e){
             e.printStackTrace();
         }
+        sqlSrvDBConn.closeConn();
         return true;
+
     }
 
     //学生退课 退课成功返回 true 退课失败 返回 false
@@ -114,7 +131,8 @@ public class student {
             while(rs.next()){
                 if(rs.getString("xq").trim().compareTo(xq)==0 &&
                         rs.getString("kh").trim().compareTo(kh)==0 &&
-                        rs.getString("gh").trim().compareTo(gh)==0){
+                        rs.getString("gh").trim().compareTo(gh)==0 &&
+                        rs.getString("xh").trim().compareTo(userTable.getId())==0){
                     status = true;
                     break;
                 }
@@ -123,9 +141,8 @@ public class student {
         }catch (SQLException e){
             e.printStackTrace();
         }
-
         try{
-            pstmt = conn.prepareStatement("delete from elect where xh = ? ,xq = ? ,kh = ? ,gh = ? ");
+            pstmt = conn.prepareStatement("delete from elect where xh = ? and xq = ?  and kh = ?  and gh = ? ");
             pstmt.setString(1,userTable.getId());
             pstmt.setString(2,xq);
             pstmt.setString(3,kh);
@@ -135,6 +152,7 @@ public class student {
             e.printStackTrace();
         }
         return true;
+
     }
 
 
