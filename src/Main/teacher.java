@@ -82,6 +82,26 @@ public class teacher{
         }
         sqlSrvDBConn.closeConn();
     }
+    public boolean addStudent(String xh,String xm,String xb,Date csrq,String jg,String sjhm,String yxh){
+        SqlSrvDBConn sqlSrvDBConn = new SqlSrvDBConn();
+        PreparedStatement pstmt = null;
+        Connection conn = sqlSrvDBConn.getConn();
+        try{
+            pstmt = conn.prepareStatement("insert into student values(?,?,?,?,?,?,?)");
+            pstmt.setString(1,xh);
+            pstmt.setString(2,xm);
+            pstmt.setString(3,xb);
+            pstmt.setDate(4,csrq);
+            pstmt.setString(5,jg);
+            pstmt.setString(6,sjhm);
+            pstmt.setString(7,yxh);
+            pstmt.execute();
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
     // 老师 评分
     public void score(String xh,String xq,String kh,Integer pscj,Integer kscj,Integer zpcj){
             SqlSrvDBConn sqlSrvDBConn = new SqlSrvDBConn();
