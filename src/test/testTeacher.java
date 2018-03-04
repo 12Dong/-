@@ -10,7 +10,8 @@ public class testTeacher  {
             userTable.setId("0101");
             userTable.setUsername("陈迪茂");
             t.setUserTable(userTable);
-            t.addStudent("1108","王小明","男",new java.sql.Date(new java.util.Date().getTime()),"上海","12345678910","02");
+            t.deleteStudent("1108");
+//            t.addStudent("1108","王小明","男",new java.sql.Date(new java.util.Date().getTime()),"上海","12345678910","02");
 //            String result[][] = t.getTeacherCourse();
 //            int r = result.length;
 //            int c = result[0].length;

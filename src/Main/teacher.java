@@ -100,6 +100,25 @@ public class teacher{
             e.printStackTrace();
             return false;
         }
+        finally{
+
+        }
+        return true;
+    }
+
+    public boolean deleteStudent(String xh){
+        SqlSrvDBConn sqlSrvDBConn = new SqlSrvDBConn();
+        PreparedStatement pstmt = null;
+        Connection conn = sqlSrvDBConn.getConn();
+        try{
+            pstmt = conn.prepareStatement("delete from student where xh = ?");
+            pstmt.setString(1,xh);
+            pstmt.execute();
+
+        }catch(SQLException e){
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
     // 老师 评分
@@ -124,5 +143,82 @@ public class teacher{
                 e.printStackTrace();
             }
             sqlSrvDBConn.closeConn();
+    }
+
+    public String[][] queryAvgScore(){
+        SqlSrvDBConn sqlSrvDBConn = new SqlSrvDBConn();
+        PreparedStatement pstmt = null;
+        Connection conn = sqlSrvDBConn.getConn();
+        String result[][]= null;
+        try{
+            pstmt = conn.prepareStatement("select kh,avg(zpcj) from elect group by kh" );
+            ResultSet rs = pstmt.executeQuery();
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount =  metaData.getColumnCount();
+            rs.last();
+            int recordAmount = rs.getRow();
+            result = new String[recordAmount+1][columnCount+1];
+            for(int i=1;i<=columnCount;i++){
+                result[0][i-1]=metaData.getColumnName(i);
+            }
+            int i=1;
+            rs.beforeFirst();
+            while(rs.next()){
+                for(int j=1;j<=columnCount;j++){
+                    result[i][j-1]=rs.getString(j);
+                }
+                i++;
+            }
+            conn.close();
+        }catch(SQLException e){
+            try{
+                conn.rollback();
+            }catch(SQLException ee)
+            {
+                ee.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public String[][] queryTermAvgScore(String xq){
+        SqlSrvDBConn sqlSrvDBConn = new SqlSrvDBConn();
+        PreparedStatement pstmt = null;
+        Connection conn = sqlSrvDBConn.getConn();
+        String result[][]= null;
+        try{
+            pstmt = conn.prepareStatement("select kh,avg(zpcj) from elect where xq = ? group by kh" );
+            pstmt.setString(1,xq);
+            ResultSet rs = pstmt.executeQuery();
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount =  metaData.getColumnCount();
+            rs.last();
+            int recordAmount = rs.getRow();
+            result = new String[recordAmount+1][columnCount+1];
+            for(int i=1;i<=columnCount;i++){
+                result[0][i-1]=metaData.getColumnName(i);
+            }
+            int i=1;
+            rs.beforeFirst();
+            while(rs.next()){
+                for(int j=1;j<=columnCount;j++){
+                    result[i][j-1]=rs.getString(j);
+                }
+                i++;
+            }
+            conn.close();
+        }catch(SQLException e){
+            try{
+                conn.rollback();
+            }catch(SQLException ee)
+            {
+                ee.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

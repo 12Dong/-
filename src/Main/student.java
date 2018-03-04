@@ -154,6 +154,41 @@ public class student {
         return true;
 
     }
+    public String[][] queryAvgScore(){
+        SqlSrvDBConn sqlSrvDBConn = new SqlSrvDBConn();
+        PreparedStatement pstmt = null;
+        Connection conn = sqlSrvDBConn.getConn();
+        String result[][]= null;
+        try{
+            pstmt = conn.prepareStatement("select kh,avg(zpcj) from elect group by kh" );
+            ResultSet rs = pstmt.executeQuery();
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount =  metaData.getColumnCount();
+            rs.last();
+            int recordAmount = rs.getRow();
+            result = new String[recordAmount+1][columnCount+1];
+            for(int i=1;i<=columnCount;i++){
+                result[0][i-1]=metaData.getColumnName(i);
+            }
+            int i=1;
+            rs.beforeFirst();
+            while(rs.next()){
+                for(int j=1;j<=columnCount;j++){
+                    result[i][j-1]=rs.getString(j);
+                }
+                i++;
+            }
+            conn.close();
+        }catch(SQLException e){
+            try{
+                conn.rollback();
+            }catch(SQLException ee)
+            {
+                ee.printStackTrace();
+            }
+            e.printStackTrace();
+        }
 
-
+        return result;
+    }
 }
